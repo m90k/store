@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import { MdShoppingCart as IconCart } from 'react-icons/md';
 
@@ -13,104 +13,45 @@ import {
   ProductButtonText,
 } from './styles';
 
-export default function Home() {
-  return (
-    <ProductList>
-      <ProductItem>
-        <ProductImage
-          src="https://static.netshoes.com.br/produtos/tenis-kappa-impact-masculino/02/D24-1738-002/D24-1738-002_detalhe2.jpg?ims=326x"
-          alt="Tenis"
-        />
-        <ProductName>Tenis</ProductName>
-        <ProductPrice>R$: 100,00</ProductPrice>
-        <ProductButton type="submit">
-          <Icone>
-            <IconCart size={16} color="#FFF" />
-          </Icone>
+import api from '../../services/api';
+import { formatPrice } from './../../utils/format';
 
-          <ProductButtonText>Adicionar</ProductButtonText>
-        </ProductButton>
-      </ProductItem>
-      <ProductItem>
-        <ProductImage
-          src="https://static.netshoes.com.br/produtos/tenis-kappa-impact-masculino/02/D24-1738-002/D24-1738-002_detalhe2.jpg?ims=326x"
-          alt="Tenis"
-        />
-        <ProductName>Tenis</ProductName>
-        <ProductPrice>R$: 100,00</ProductPrice>
-        <ProductButton type="submit">
-          <Icone>
-            <IconCart size={16} color="#FFF" />
-          </Icone>
+export default class Home extends Component {
+  state = {
+    products: [],
+  };
 
-          <ProductButtonText>Adicionar</ProductButtonText>
-        </ProductButton>
-      </ProductItem>
-      <ProductItem>
-        <ProductImage
-          src="https://static.netshoes.com.br/produtos/tenis-kappa-impact-masculino/02/D24-1738-002/D24-1738-002_detalhe2.jpg?ims=326x"
-          alt="Tenis"
-        />
-        <ProductName>Tenis</ProductName>
-        <ProductPrice>R$: 100,00</ProductPrice>
-        <ProductButton type="submit">
-          <Icone>
-            <IconCart size={16} color="#FFF" />
-          </Icone>
+  async componentDidMount() {
+    const response = await api.get('products');
 
-          <ProductButtonText>Adicionar</ProductButtonText>
-        </ProductButton>
-      </ProductItem>
+    const data = response.data.map(product => ({
+      ...product,
+      priceFormatted: formatPrice(product.price),
+    }));
 
-      <ProductItem>
-        <ProductImage
-          src="https://static.netshoes.com.br/produtos/tenis-kappa-impact-masculino/02/D24-1738-002/D24-1738-002_detalhe2.jpg?ims=326x"
-          alt="Tenis"
-        />
-        <ProductName>Tenis</ProductName>
-        <ProductPrice>R$: 100,00</ProductPrice>
-        <ProductButton type="submit">
-          <Icone>
-            <IconCart size={16} color="#FFF" />
-          </Icone>
+    this.setState({ products: data });
+  }
 
-          <ProductButtonText>Adicionar</ProductButtonText>
-        </ProductButton>
-      </ProductItem>
+  render() {
+    const { products } = this.state;
+    return (
+      <ProductList>
+        {products.map(product => (
+          <ProductItem key={product.id}>
+            <ProductImage src={product.image} alt={product.title} />
+            <ProductName>{product.title}</ProductName>
+            <ProductPrice>{product.priceFormatted}</ProductPrice>
+            <ProductButton type="submit">
+              <Icone>
+                <IconCart size={16} color="#FFF" />
+                10
+              </Icone>
 
-      <ProductItem>
-        <ProductImage
-          src="https://static.netshoes.com.br/produtos/tenis-kappa-impact-masculino/02/D24-1738-002/D24-1738-002_detalhe2.jpg?ims=326x"
-          alt="Tenis"
-        />
-        <ProductName>Tenis</ProductName>
-        <ProductPrice>R$: 100,00</ProductPrice>
-        <ProductButton type="submit">
-          <Icone>
-            <IconCart size={16} color="#FFF" />
-            10
-          </Icone>
-
-          <ProductButtonText>Adicionar</ProductButtonText>
-        </ProductButton>
-      </ProductItem>
-
-      <ProductItem>
-        <ProductImage
-          src="https://static.netshoes.com.br/produtos/tenis-kappa-impact-masculino/02/D24-1738-002/D24-1738-002_detalhe2.jpg?ims=326x"
-          alt="Tenis"
-        />
-        <ProductName>Tenis</ProductName>
-        <ProductPrice>R$: 100,00</ProductPrice>
-        <ProductButton type="submit">
-          <Icone>
-            <IconCart size={16} color="#FFF" />
-            10000000
-          </Icone>
-
-          <ProductButtonText>Adicionar</ProductButtonText>
-        </ProductButton>
-      </ProductItem>
-    </ProductList>
-  );
+              <ProductButtonText>Adicionar</ProductButtonText>
+            </ProductButton>
+          </ProductItem>
+        ))}
+      </ProductList>
+    );
+  }
 }
