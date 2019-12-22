@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-
+/** REDUX */
+import { connect } from 'react-redux';
 import { MdShoppingCart as IconCart } from 'react-icons/md';
 
 import {
@@ -15,15 +16,20 @@ import {
 
 import api from '../../services/api';
 import { formatPrice } from './../../utils/format';
-
-export default class Home extends Component {
+import * as CartActions from './../../store/modules/cart/actions';
+import { bindActionCreators } from 'redux';
+class Home extends Component {
   state = {
     products: [],
   };
 
+  handleAddProduct = product => {
+    const { add } = this.props;
+    add(product);
+  };
+
   async componentDidMount() {
     const response = await api.get('products');
-
     const data = response.data.map(product => ({
       ...product,
       priceFormatted: formatPrice(product.price),
@@ -34,6 +40,7 @@ export default class Home extends Component {
 
   render() {
     const { products } = this.state;
+    const { amount } = this.props;
     return (
       <ProductList>
         {products.map(product => (
@@ -41,10 +48,13 @@ export default class Home extends Component {
             <ProductImage src={product.image} alt={product.title} />
             <ProductName>{product.title}</ProductName>
             <ProductPrice>{product.priceFormatted}</ProductPrice>
-            <ProductButton type="submit">
+            <ProductButton
+              type="button"
+              onClick={() => this.handleAddProduct(product)}
+            >
               <Icone>
                 <IconCart size={16} color="#FFF" />
-                10
+                {amount[product.id] || 0}
               </Icone>
 
               <ProductButtonText>Adicionar</ProductButtonText>
@@ -55,3 +65,14 @@ export default class Home extends Component {
     );
   }
 }
+const mapStateToProps = state => ({
+  amount: state.cart.reduce((amount, product) => {
+    amount[product.id] = product.amount;
+    return amount;
+  }, {}),
+});
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
