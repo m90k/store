@@ -35,13 +35,13 @@ import {
   Total,
 } from './styles';
 
-function Cart({ cart, remove, total, updateAmount }) {
+function Cart({ cart, remove, total, updateAmountRequest }) {
   function AddProduct(product) {
-    updateAmount(product.id, product.amount + 1);
+    updateAmountRequest(product.id, product.amount + 1);
   }
 
   function RemoveProduct(product) {
-    updateAmount(product.id, product.amount - 1);
+    updateAmountRequest(product.id, product.amount - 1);
   }
 
   return (
